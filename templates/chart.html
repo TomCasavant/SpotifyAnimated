@@ -1,0 +1,22 @@
+<html>
+<head>
+  <title>Spotify</title>
+  <style>
+    body {
+      background-color: black
+    }
+  </style>
+</head>
+<body>
+  <form method='post' action="/">
+    <select name=playlists>
+      {% for playlist in playlists %}
+      <option value="{{playlist['id']}}">{{ playlist['name'] }}</option>
+      {% endfor %}
+    </select>
+    <input type=submit value="Create Graph">
+  </form>
+  {% if chart %}
+  {{ chart|safe }}
+  {% endif %}
+</body>
