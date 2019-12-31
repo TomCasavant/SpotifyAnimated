@@ -8,14 +8,16 @@ import matplotlib.animation as animation
 
 from src.spotify import get_playlist_data
 
-def gen_plot(token, playlist_id):
+def gen_plot(token, playlist_id, background_color, title, text_color, freq):
     ''' Creates an animated plot and returns an HTML5 video to be embedded in page'''
     df = get_playlist_data(token, playlist_id) # Get a dataframe full of playlist data
 
     fig, ax = plt.subplots(figsize=(18, 8)) # Create figure
-
+    range = pd.date_range(min(df['date_added']), max(df['date_added']), normalize=True, freq=freq).to_list()
+    if len(range) == 0:
+        range = pd.date_range(min(df['date_added']), max(df['date_added']), normalize=True, freq="D").to_list()
     # Iterate over create_chart for each week between the beginning and end of the playlist
-    animator = animation.FuncAnimation(fig, create_chart, frames=pd.date_range(min(df['date_added']), max(df['date_added']), normalize=True, freq="W").to_list(), fargs=[ax, df])
+    animator = animation.FuncAnimation(fig, create_chart, frames=range, fargs=[ax, df, background_color, title, text_color, freq])
     return animator.to_html5_video() # Create HTML5 video from animation
 
 def to_color(id):
@@ -27,20 +29,21 @@ def to_color(id):
     color = "%06x" % (id % 0xFFFFFF) # Convert the id into a hex number
     return "#" + color # Return hex number with color format
 
-def setup_labels(ax, date):
+def setup_labels(ax, date, title, text_color, freq):
     ''' Creates all of the labels for the plot '''
-    ax.text(1, 0.4, date.to_period("D"), transform=ax.transAxes, color='white', size=45, ha='right', weight=800) # Display date
+    if freq=="W": freq="D"
+    ax.text(1, 0.4, date.to_period(freq), transform=ax.transAxes, color=text_color, size=45, ha='right', weight=800) # Display date
 
     # Title and Subtitle
     ax.text(0, 1.05, '% Of Playlist', transform=ax.transAxes, size=11, color='gray')
-    ax.text(0, 1.09, 'Most Popular Artist by Date Added',
+    ax.text(0, 1.09, title,
             transform=ax.transAxes, size=24, weight=600, ha='left')
 
     # Display my name
     ax.text(1, 0, 'Tom Casavant - @MrPresidentTom', transform=ax.transAxes, ha='right',
             color='white', bbox=dict(facecolor='white', alpha=0.8, edgecolor='white'))
 
-def setup_axis(ax):
+def setup_axis(ax, color):
     ''' Setup the axis tick marks and color '''
     ax.xaxis.set_major_formatter(ticker.StrMethodFormatter('{x:,.2f}')) # Limit percentages to 2 decimal places
     ax.xaxis.set_ticks_position('top')
@@ -49,7 +52,7 @@ def setup_axis(ax):
     ax.margins(0, 0.01)
     ax.grid(which='major', axis='x', linestyle='-') # Setup grid lines
     ax.set_axisbelow(True)
-    ax.set_facecolor('black') # Setup color of plot
+    ax.set_facecolor(color) # Setup color of plot
 
     # Incremement the last xtick mark (Makes it easier to see percentage of largest value)
     locs, labels = plt.xticks()
@@ -76,18 +79,18 @@ def prepare_data(df, date):
     dff = dff.tail(15) # Take the top 15 values
     return dff
 
-def setup_bars(ax, dff):
+def setup_bars(ax, dff, text_color):
     ''' Create the bars and attach labels to each one '''
     ax.clear()
     ax.barh(dff['artist'], dff['percentage'], height=0.6, color=[to_color(x) for x in dff['id']]) # Colorize each bar with to_color(id)
 
     for i, (percentage, artist, count) in enumerate(zip(dff['percentage'], dff['artist'], dff['count'])):
-        ax.text(percentage, i,     artist,           size=12, weight=600, ha='right', va='center', color='white') # The artist name
-        ax.text(percentage, i,     f'{percentage:,.2f}% ({count})',  size=12, ha='left',  va='center', color='white') # The percentage and count of each artist
+        ax.text(percentage, i,     artist,           size=12, weight=600, ha='right', va='center', color=text_color) # The artist name
+        ax.text(percentage, i,     f'{percentage:,.2f}% ({count})',  size=12, ha='left',  va='center', color=text_color) # The percentage and count of each artist
 
-def create_chart(date, ax, df):
+def create_chart(date, ax, df, background_color, title, text_color, freq):
     ''' Handles creating the entire chart '''
     dff = prepare_data(df, date)
-    setup_bars(ax, dff)
-    setup_axis(ax)
-    setup_labels(ax, date)
+    setup_bars(ax, dff, text_color)
+    setup_axis(ax, background_color)
+    setup_labels(ax, date, title, text_color, freq)
