@@ -9,7 +9,7 @@ CLIENT_SECRET = os.environ['SPOTIFY_SECRET']
 
 #Port and callback url can be changed or ledt to localhost:5000
 PORT = "5000"
-CALLBACK_URL = "http://localhost"
+CALLBACK_URL = os.environ['CALLBACK_URL']
 
 #Add needed scope from spotify user
 SCOPE = "playlist-read-collaborative playlist-read-private"
