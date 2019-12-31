@@ -18,7 +18,7 @@ TOKEN_DATA = []
 
 
 def getUser():
-    return getAuth(CLIENT_ID, "{}:{}/callback/".format(CALLBACK_URL, PORT), SCOPE)
+    return getAuth(CLIENT_ID, "{}/callback/".format(CALLBACK_URL), SCOPE)
 
 def getUserToken(code):
     global TOKEN_DATA
