@@ -93,7 +93,7 @@ def setup_bars(ax, dff, text_color):
 
 def create_chart(song_num, ax, df, background_color, title, text_color, song_count):
     ''' Handles creating the entire chart '''
-    dff, comparison_date = prepare_data(df, song_num)
+    dff, comparison_date = prepare_data(df, song_num, song_count)
     setup_bars(ax, dff, text_color)
     setup_axis(ax, background_color)
     setup_labels(ax, song_num, title, text_color, comparison_date)
