@@ -1,6 +1,6 @@
 import io
 from spotifyauth import startup
-from flask import Flask, render_template, redirect, request, url_for, session
+from flask import Flask, render_template, redirect, request, url_for, session, Response
 
 from src.plotter import gen_plot
 from src.spotify import get_playlists
@@ -23,7 +23,8 @@ def index():
         freq = int(request.form.get('increment'))
         song_count = int(request.form.get('song_count'))
         chart = gen_plot(startup.getAccessToken()[0], choice, background_color, title, text_color, freq, song_count) # Create the plot
-        return render_template('chart.html', playlists=playlists, chart=chart) # Render the plot
+        return Response(gen_plot(startup.getAccessToken()[0], choice, background_color, title, text_color, freq, song_count), mimetype="text/html")
+        #return render_template('chart.html', playlists=playlists, chart=chart) # Render the plot
 
     else:
         if auth:
