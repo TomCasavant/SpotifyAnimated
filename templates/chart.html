@@ -10,12 +10,8 @@
       <option value="{{playlist['id']}}">{{ playlist['name'] }}</option>
       {% endfor %}
     </select> <br />
-    Frequency:
-    <select name="frequency">
-      <option value="D">Daily</option>
-      <option value="W" selected>Weekly</option>
-      <option value="M">Monthly</option>
-    </select>
+    Frequency: <input type="number" name="increment" value="5" min="1" max="10"> songs<br />
+    <input type="number" name="increment" value="5" min="1" max="10"> songs<br />
     Text Color: <input type="color" name="text" value="#FFFFFF"> <br />
     Background Color: <input type="color" name="background" value="#000000"> <br />
     Chart Title: <input type="text" name="title" value="Spotify Artists over Time"> <br />

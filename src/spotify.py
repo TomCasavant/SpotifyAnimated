@@ -26,6 +26,7 @@ def get_playlist_data(token, playlist_id):
     data = {'id':ids, 'artist':artists, 'date_added':dates_added, 'count':counts}
     df = pd.DataFrame(data) # Create dataframe
     df['date_added'] = df['date_added'].astype('datetime64[ns]').dt.normalize() # Convert all dates into panda dates
+    print(df)
     return df
 
 def collect_info(tracks, ids, artists, counts, dates_added, song_counts):
@@ -36,7 +37,7 @@ def collect_info(tracks, ids, artists, counts, dates_added, song_counts):
         if (artist['id'] in ids):
             song_counts[artist['id']]+=1 # Increment number of songs associated with artist
         else:
-            song_counts[artist['id']] = 0 # Create new artist
+            song_counts[artist['id']] = 1 # Create new artist
         ids.append(artist['id'])
         artists.append(artist['name'])
         counts.append(song_counts[artist['id']])

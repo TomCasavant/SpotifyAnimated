@@ -28,7 +28,7 @@ def index():
         text_color = request.form.get('text')
         background_color = request.form.get('background')
         title = request.form.get('title')
-        freq = request.form.get('frequency')
+        freq = int(request.form.get('increment'))
         chart = gen_plot(startup.getAccessToken()[0], choice, background_color, title, text_color, freq) # Create the plot
         return render_template('chart.html', playlists=playlists, chart=chart) # Render the plot
 
