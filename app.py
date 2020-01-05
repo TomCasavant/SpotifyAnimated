@@ -1,7 +1,6 @@
 import io
 from spotifyauth import startup
 from flask import Flask, render_template, redirect, request, url_for, session, Response
-from flaskthreads import AppContextThread
 
 from src.plotter import gen_plot
 from src.spotify import get_playlists
