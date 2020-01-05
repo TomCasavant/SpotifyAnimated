@@ -1,6 +1,27 @@
 <html>
 <head>
   <title>Spotify</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script type="text/javascript" charset="utf-8">
+  $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+  $(function() {
+    $('input#submit').bind('click', function() {
+      $.getJSON($SCRIPT_ROOT + '/_generate', {
+        playlist: $('select[name="playlists"]').val(),
+        freq: $('input[name="increment"]').val(),
+        song_count: $('input[name="song_count"]').val(),
+        text_color: $('input[name="text"]').val(),
+        background_color: $('input[name="background"]').val(),
+        title: $('input[name="title"]').val()
+
+      }, function(data) {
+        document.getElementById("chart_placeholder").innerHTML = data.chart
+        $("#result").text(data.chart);
+      });
+      return false;
+    });
+  });
+  </script>
 </head>
 <body>
   <form method='post' action="/">
@@ -15,9 +36,11 @@
     Text Color: <input type="color" name="text" value="#FFFFFF"> <br />
     Background Color: <input type="color" name="background" value="#000000"> <br />
     Chart Title: <input type="text" name="title" value="Spotify Artists over Time"> <br />
-    <input type=submit value="Create Graph">
+    <input id="submit" type=submit value="Create Graph">
   </form>
+  <div id="chart_placeholder"></div>
   {% if chart %}
   {{ chart|safe }}
   {% endif %}
+
 </body>
