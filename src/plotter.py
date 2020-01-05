@@ -8,7 +8,7 @@ import matplotlib.animation as animation
 
 from src.spotify import get_playlist_data
 
-def gen_plot(token, playlist_id, background_color, title, text_color, freq):
+def gen_plot(token, playlist_id, background_color, title, text_color, freq, song_count):
     ''' Creates an animated plot and returns an HTML5 video to be embedded in page'''
     df = get_playlist_data(token, playlist_id) # Get a dataframe full of playlist data
 
@@ -16,7 +16,7 @@ def gen_plot(token, playlist_id, background_color, title, text_color, freq):
 
     r = range(0, len(df)-1, freq)
     # Iterate over create_chart for each week between the beginning and end of the playlist
-    animator = animation.FuncAnimation(fig, create_chart, frames=r, fargs=[ax, df, background_color, title, text_color])
+    animator = animation.FuncAnimation(fig, create_chart, frames=r, fargs=[ax, df, background_color, title, text_color, song_count])
     #animator.save("video.mp4")
     return animator.to_html5_video() # Create HTML5 video from animation
 
@@ -70,7 +70,7 @@ def remove_frame(ax):
     ax.spines['bottom'].set_visible(False)
     ax.spines['left'].set_visible(False)
 
-def prepare_data(df, song_num):
+def prepare_data(df, song_num, song_count):
     ''' Setup the necessary data for the plot '''
     dff = df.sort_values(by='date_added', ascending=True) # Only use values before given date, sort by count
     comparison_date = dff.iloc[song_num-1]['date_added']
@@ -79,7 +79,7 @@ def prepare_data(df, song_num):
     dff = dff.sort_values(by=["count", "date_added"], ascending=True)
     #print(dff)
     dff['percentage'] = (dff['count'] / dff['count'].sum())*100 # Calculate the percentage of each count
-    dff = dff.tail(10) # Take the top 15 values
+    dff = dff.tail(song_count) # Take the top 15 values
     return dff, comparison_date
 
 def setup_bars(ax, dff, text_color):
@@ -91,7 +91,7 @@ def setup_bars(ax, dff, text_color):
         ax.text(percentage, i,     artist,           size=14, weight=600, ha='right', va='center', color=text_color) # The artist name
         ax.text(percentage, i,     f'{percentage:,.2f}% ({count})',  size=14, ha='left',  va='center', color=text_color) # The percentage and count of each artist
 
-def create_chart(song_num, ax, df, background_color, title, text_color):
+def create_chart(song_num, ax, df, background_color, title, text_color, song_count):
     ''' Handles creating the entire chart '''
     dff, comparison_date = prepare_data(df, song_num)
     setup_bars(ax, dff, text_color)
